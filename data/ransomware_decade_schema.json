@@ -1,0 +1,714 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Ransomware Incident Record",
+  "type": "object",
+  "properties": {
+    "uuid": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Unique identifier for this incident record."
+    },
+    "victim": {
+      "type": "string",
+      "description": "Organization or government body targeted by the incident."
+    },
+    "sector": {
+      "type": "string",
+      "description": "Industry classification of the victim.",
+      "enum": [
+        "Communications",
+        "Consumer Goods",
+        "Educational",
+        "Financials",
+        "Government",
+        "Healthcare",
+        "Industrials",
+        "IT",
+        "Other"
+      ]
+    },
+    "attacker": {
+      "type": "array",
+      "description": "Names of ransomware groups or variants attributed to the incident.",
+      "items": { "type": "string" }
+    },
+    "incident-date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date on which the the incident occurred or began."
+    },
+    "attack-vector": {
+      "type": "object",
+      "description": "Tools, methods, or techniques used to carry out the attack.",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "description": "List of extracted binary categories.",
+          "items": { "$ref": "#/$defs/category" }
+        },
+        "attributes": {
+          "type": "array",
+          "description": "List of extracted numeric or textual attributes.",
+          "items": { "$ref": "#/$defs/attribute" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "attacker-action": {
+      "type": "object",
+      "description": "Actions taken by the attacker after infection or infiltration.",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "description": "List of extracted binary categories.",
+          "items": { "$ref": "#/$defs/category" }
+        },
+        "attributes": {
+          "type": "array",
+          "description": "List of extracted numeric or textual attributes.",
+          "items": { "$ref": "#/$defs/attribute" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "victim-action": {
+      "type": "object",
+      "description": "Actions taken by the victim in response to the attack.",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "description": "List of extracted binary categories.",
+          "items": { "$ref": "#/$defs/category" }
+        },
+        "attributes": {
+          "type": "array",
+          "description": "List of extracted numeric or textual attributes.",
+          "items": { "$ref": "#/$defs/attribute" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "impact": {
+      "type": "object",
+      "description": "Information related to the impact of the incident.",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "description": "List of extracted binary categories.",
+          "items": { "$ref": "#/$defs/category" }
+        },
+        "attributes": {
+          "type": "array",
+          "description": "List of extracted numeric or textual attributes.",
+          "items": { "$ref": "#/$defs/attribute" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "affected-data": {
+      "type": "array",
+      "description": "Data impacted as a result of the incident.",
+      "items": { "$ref": "#/$defs/affectedData" }
+    },
+    "indirect-victim": {
+      "type": "array",
+      "description": "Parties or groups affected by the incident aside from the victim.",
+      "items": { "$ref": "#/$defs/indirectVictim" }
+    },
+    "timeline": {
+      "type": "array",
+      "description": "Dates of key events in the incident timeline.",
+      "items": { "$ref": "#/$defs/timeline" }
+    },
+    "sources": {
+      "type": "array",
+      "description": "Source articles from which incident details were extracted.",
+      "items": { "$ref": "#/$defs/source" }
+    },
+    "ransomware.live-url": {
+      "type": "string",
+      "format": "uri",
+      "description": "Link to the corresponding entry on Ransomware.live (if available)."
+    }
+  },
+  "required": [
+    "uuid",
+    "victim",
+    "sector",
+    "attacker",
+    "incident-date",
+    "sources"
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "dataType": {
+      "type": "string",
+      "description": "Type of data affected by an incident.",
+      "anyof": [
+        {
+          "enum": [
+            "PII",
+            "Financial Data",
+            "Medical Data",
+            "HR Data",
+            "IP"
+          ]
+        },
+        { "type": "string" }
+      ]
+    },
+    "dataOutcome": {
+      "type": "string",
+      "description": "Outcome indicating the consequence for affected data.",
+      "anyof": [
+        {
+          "enum": [
+            "Stolen",
+            "Exposed",
+            "Sold",
+            "Destroyed"
+          ]
+        },
+        { "type": "string" }
+      ]
+    },
+    "entityType": {
+      "type": "string",
+      "description": "Type of party affected by an incident.",
+      "anyof": [
+        {
+          "enum": [
+            "Individual",
+            "Employee",
+            "Entity"
+          ]
+        },
+        { "type": "string" }
+      ]
+    },
+    "impact": {
+      "type": "string",
+      "description": "Type of impact experienced by an affected party or group.",
+      "anyof": [
+        {
+          "enum": [
+            "Service Disruption",
+            "Service Diversion",
+            "Data Theft",
+            "Data Exposure",
+            "Data Sale",
+            "Data Loss"
+          ]
+        },
+        { "type": "string" }
+      ]
+    },
+    "aggregationMethod": {
+      "type": "string",
+      "description": "Method used to aggregate multiple values.",
+      "enum": [
+        "concat",
+        "majority-vote",
+        "median"
+      ]
+    },
+    "evidence": {
+      "type": "object",
+      "description": "Evidence obtained from a source article.",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the source article."
+        },
+        "is-match": {
+          "type": "boolean",
+          "description": "Whether the extracted attribute value matches or is included in the final aggregated value."
+        },
+        "validated": {
+          "type": "boolean",
+          "description": "Whether the information regarding this attribute is validated or speculative."
+        },
+        "reason": {
+          "type": "string",
+          "description": "Rationale or justification for the extracted attribute value."
+        },
+        "marked-context": {
+          "type": "string",
+          "description": "Text segment from the article providing context for the extracted attribute value."
+        },
+        "spans": {
+          "type": "array",
+          "description": "List of [start, end) character offset pairs locating the relevant text within the full article.",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "minItems": 2,
+            "maxItems": 2
+          }
+        }
+      },
+      "required": [
+        "url",
+        "is-match",
+        "marked-context",
+        "spans"
+      ]
+    },
+    "categoryEvidence": {
+      "type": "object",
+      "description": "Evidence related to a binary category.",
+      "allOf": [
+        { "$ref": "#/$defs/evidence" }
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Extracted category label."
+        },
+        "subcategories": {
+          "type": "array",
+          "description": "List of extracted subcategories associated with this category.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Extracted subcategory label."
+              },
+              "validated": {
+                "type": "boolean",
+                "description": "Whether the information regarding this subcategory is validated or speculative."
+              },
+              "reason": {
+                "type": "string",
+                "description": "Rationale or justification for the extracted subcategory."
+              }
+            },
+            "required": [
+              "name",
+              "validated",
+              "reason"
+            ],
+            "additionalProperties": false
+          }
+        }
+      },
+      "required": ["name"],
+      "unevaluatedProperties": false
+    },
+    "attributeEvidence": {
+      "type": "object",
+      "description": "Evidence related to a numeric or textual attribute.",
+      "allOf": [
+        { "$ref": "#/$defs/evidence" }
+      ],
+      "properties": {
+        "value": {
+          "description": "Value extracted for this attribute.",
+          "anyOf": [
+            { "type": "number" },
+            { "type": "string" },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  { "type": "number" },
+                  { "type": "string" }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "affectedDataEvidence": {
+      "type": "object",
+      "description": "Evidence related to affected data.",
+      "allOf": [
+        { "$ref": "#/$defs/evidence" }
+      ],
+      "properties": {
+        "categories": {
+          "type": "array",
+          "description": "Types of data affected by the incident.",
+          "items": { "$ref": "#/$defs/dataType" }
+        },
+        "owner-types": {
+          "type": "array",
+          "description": "Types of parties that own the affected data.",
+          "items": { "$ref": "#/$defs/entityType" }
+        },
+        "outcomes": {
+          "type": "array",
+          "description": "Outcomes indicating the consequences for the affected data.",
+          "items": { "$ref": "#/$defs/dataOutcome" }
+        },
+        "volume": {
+          "type": "array",
+          "description": "Amount of affected data, represented as a [quantity, unit] pair.",
+          "prefixItems": [
+            { "type": "number" },
+            { "type": "string" }
+          ],
+          "items": false
+        }
+      },
+      "unevaluatedProperties": false
+    },
+    "indirectVictimEvidence": {
+      "type": "object",
+      "description": "Evidence related to an affected party or group aside from the victim.",
+      "allOf": [
+        { "$ref": "#/$defs/evidence" }
+      ],
+      "properties": {
+        "type": {
+          "type": "array",
+          "description": "Types of parties affected by the incident.",
+          "items": { "$ref": "#/$defs/entityType" }
+        },
+        "name": {
+          "type": "string",
+          "description": "Name or description identifying the affected party or group."
+        },
+        "count": {
+          "type": "number",
+          "description": "Number of affected parties."
+        },
+        "impacts": {
+          "type": "array",
+          "description": "Types of impact experienced by the affected party or group.",
+          "items": { "$ref": "#/$defs/impact" }
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ],
+      "unevaluatedProperties": false
+    },
+    "timelineEvidence": {
+      "type": "object",
+      "allOf": [
+        { "$ref": "#/$defs/evidence" }
+      ],
+      "properties": {
+        "value": {
+          "type": "string",
+          "format": "date",
+          "description": "Date on which the event occurred."
+        }
+      },
+      "required": ["value"],
+      "unevaluatedProperties": false
+    },
+    "category": {
+      "type": "object",
+      "description": "Binary category with accompanying evidence.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Extracted category label."
+        },
+        "subcategories": {
+          "type": "array",
+          "description": "List of extracted subcategories associated with this category.",
+          "items": { "type": "string" }
+        },
+        "aggregation-method": {
+          "$ref": "#/$defs/aggregationMethod",
+          "description": "Method used to aggregate multiple values."
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Evidence obtained from source articles.",
+          "items": { "$ref": "#/$defs/categoryEvidence" }
+        }
+      },
+      "required": [
+        "name",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "attribute": {
+      "type": "object",
+      "description": "Numeric or textual attribute with accompanying evidence.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Name of the attribute."
+        },
+        "value": {
+          "description": "Value(s) extracted for this attribute.",
+          "anyOf": [
+            { "type": "number" },
+            { "type": "string" },
+            {
+              "type": "array",
+              "items": {
+                "anyOf": [
+                  { "type": "number" },
+                  { "type": "string" }
+                ]
+              }
+            }
+          ]
+        },
+        "aggregation-method": {
+          "$ref": "#/$defs/aggregationMethod",
+          "description": "Method used to aggregate multiple values."
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Evidence obtained from source articles.",
+          "items": { "$ref": "#/$defs/attributeEvidence" }
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "aggregation-method",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "affectedData": {
+      "type": "object",
+      "description": "Affected data with accompanying evidence.",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "description": "Types of data affected by the incident.",
+          "items": { "$ref": "#/$defs/dataType" }
+        },
+        "owner-types": {
+          "type": "array",
+          "description": "Types of parties that own the affected data.",
+          "items": { "$ref": "#/$defs/entityType" }
+        },
+        "volume": {
+          "type": "object",
+          "description": "Data volume(s) associated with the affected data.",
+          "properties": {
+            "value": {
+              "type": "array",
+              "description": "List of extracted data volumes.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "value": {
+                    "type": "array",
+                    "description": "Amount of affected data, represented as a [quantity, unit] pair.",
+                    "prefixItems": [
+                      { "type": "number" },
+                      { "type": "string" }
+                    ],
+                    "items": false
+                  },
+                  "aggregation-method": {
+                    "$ref": "#/$defs/aggregationMethod",
+                    "description": "Method used to aggregate multiple values."
+                  }
+                },
+                "required": [
+                  "value",
+                  "aggregation-method"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "evidence": {
+              "type": "array",
+              "description": "Evidence obtained from source articles.",
+              "items": { "$ref": "#/$defs/affectedDataEvidence" }
+            }
+          },
+          "required": [
+            "value",
+            "evidence"
+          ],
+          "additionalProperties": false
+        },
+        "outcomes": {
+          "type": "object",
+          "description": "Outcomes indicating the consequences for the affected data.",
+          "properties": {
+            "value": {
+              "type": "array",
+              "description": "List of extracted outcomes.",
+              "items": { "$ref": "#/$defs/dataOutcome" }
+            },
+            "aggregation-method": {
+              "$ref": "#/$defs/aggregationMethod",
+              "description": "Method used to aggregate multiple values."
+            },
+            "evidence": {
+              "type": "array",
+              "description": "Evidence obtained from source articles.",
+              "items": { "$ref": "#/$defs/affectedDataEvidence" }
+            }
+          },
+          "required": [
+            "value",
+            "aggregation-method",
+            "evidence"
+          ],
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Evidence obtained from source articles.",
+          "items": { "$ref": "#/$defs/affectedDataEvidence" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "indirectVictim": {
+      "type": "object",
+      "description": "Affected party or group with accompanying evidence.",
+      "properties": {
+        "type": {
+          "type": "array",
+          "description": "Types of parties affected by the incident.",
+          "items": { "$ref": "#/$defs/entityType" }
+        },
+        "name": {
+          "type": "string",
+          "description": "Name or description identifying the affected party or group."
+        },
+        "count": {
+          "type": "object",
+          "description": "Number of affected parties.",
+          "properties": {
+            "value": { "type": "number" },
+            "aggregation-method": {
+              "$ref": "#/$defs/aggregationMethod",
+              "description": "Method used to aggregate multiple values."
+            },
+            "evidence": {
+              "type": "array",
+              "description": "Evidence obtained from source articles.",
+              "items": { "$ref": "#/$defs/indirectVictimEvidence" }
+            }
+          },
+          "required": [
+            "value",
+            "aggregation-method",
+            "evidence"
+          ],
+          "additionalProperties": false
+        },
+        "impacts": {
+          "type": "object",
+          "description": "Types of impact experienced by the affected party or group.",
+          "properties": {
+            "value": {
+              "type": "array",
+              "description": "List of extracted impacts.",
+              "items": { "$ref": "#/$defs/impact" }
+            },
+            "aggregation-method": {
+              "$ref": "#/$defs/aggregationMethod",
+              "description": "Method used to aggregate multiple values."
+            },
+            "evidence": {
+              "type": "array",
+              "description": "Evidence obtained from source articles.",
+              "items": { "$ref": "#/$defs/indirectVictimEvidence" }
+            }
+          },
+          "required": [
+            "value",
+            "aggregation-method",
+            "evidence"
+          ],
+          "additionalProperties": false
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Evidence obtained from source articles.",
+          "items": { "$ref": "#/$defs/indirectVictimEvidence" }
+        }
+      },
+      "required": [
+        "type",
+        "name"
+      ],
+      "additionalProperties": false
+    },
+    "timeline": {
+      "type": "object",
+      "description": "Timeline event with accompanying evidence.",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "Label of the timeline event."
+        },
+        "value": {
+          "type": "string",
+          "format": "date",
+          "description": "Date on which the event occurred."
+        },
+        "aggregation-method": {
+          "$ref": "#/$defs/aggregationMethod",
+          "description": "Method used to aggregate multiple values."
+        },
+        "evidence": {
+          "type": "array",
+          "description": "Evidence obtained from source articles.",
+          "items": { "$ref": "#/$defs/timelineEvidence" }
+        }
+      },
+      "required": [
+        "name",
+        "value",
+        "aggregation-method",
+        "evidence"
+      ],
+      "additionalProperties": false
+    },
+    "source": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of the source article."
+        },
+        "victims": {
+          "type": "array",
+          "description": "Victim name(s) extracted from the article and relevant to this incident record.",
+          "items": { "type": "string" }
+        },
+        "attackers": {
+          "type": "array",
+          "description": "Attacker name(s) extracted from the article and relevant to this incident record.",
+          "items": { "type": "string" }
+        },
+        "date-published": {
+          "type": "string",
+          "format": "date",
+          "description": "Article publication date."
+        },
+        "content": {
+          "type": "string",
+          "description": "Full text content of the article."
+        }
+      },
+      "required": [
+        "url",
+        "victims",
+        "attackers",
+        "date-published",
+        "content"
+      ],
+      "additionalProperties": false
+    }
+  }
+}
